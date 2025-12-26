@@ -1,0 +1,13 @@
+Java File Descriptions
+
+Demo.java - Entry point of the program; runs the game flow, adds players, triggers events, and displays the scoreboard.
+
+GameMode.java - Defines the different game modes available (Single Player, LAN Host, LAN Join, Competitive).
+
+GameStateException.java - Custom exception class used to handle invalid game state actions.
+
+RoundManager.java - Manages game rounds; starts, ends rounds, and keeps track of the current round.
+
+Scoreboard.java - Tracks players' scores; allows adding players, updating, resetting, and displaying scores.
+
+GameManager.java - Main game controller; integrates rounds, scoreboard, player actions, and special effects like Power Pellet and LAN callbacks.
