@@ -7,7 +7,7 @@ REM Create bin directory if it doesn't exist
 if not exist "bin" mkdir bin
 
 REM Compile all Java files from src to bin
-javac --module-path "C:\javafx-sdk\lib" --add-modules javafx.controls -d bin src\Direction.java src\PacmanGame.java src\GameController.java src\Maze.java src\Pacman.java src\Ghost.java
+javac --module-path "C:\javafx-sdk\lib" --add-modules javafx.controls -d bin src\Direction.java src\PacmanGame.java src\GameController.java src\Maze.java src\Pacman.java src\Ghost.java src\SoundManager.java
 
 if %errorlevel% == 0 (
     echo.
