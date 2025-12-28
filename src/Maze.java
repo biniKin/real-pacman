@@ -322,7 +322,7 @@ public class Maze {
         
         mazeGroup.getChildren().removeIf(node -> {
             if (node instanceof Circle) {
-                Circle circle = (Circle) node;
+                Circle circle = (Circle) node; // type casting
                 return Math.abs(circle.getCenterX() - centerX) < 1 &&
                        Math.abs(circle.getCenterY() - centerY) < 1 &&
                        Math.abs(circle.getRadius() - radius) < 1;

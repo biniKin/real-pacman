@@ -539,7 +539,7 @@ public class GameController {
         root.getChildren().add(overlay);
         
         // Game over text
-        Text gameOverText = new Text(220, 300, "GAME OVER");
+        Text gameOverText = new Text(220, 300, "GAME OVER"); // text takes x,y for position of baseline start
         gameOverText.setFill(Color.RED);
         gameOverText.setFont(Font.font("Arial", FontWeight.BOLD, 50));
         root.getChildren().add(gameOverText);

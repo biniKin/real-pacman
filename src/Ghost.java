@@ -1,30 +1,32 @@
-import javafx.scene.Group;
+import javafx.scene.Group; // used to group multiple nodes or shapes together
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.ArrayList; // for storing valid directions
+import java.util.List; // for storing valid directions
+import java.util.Random; // for random direction choices for the ghost
 
 /**
  * Ghost with smooth AI movement
  */
 public class Ghost {
     
-    private Group sprite;
+    private Group sprite; // Ghost visual representation
     private int gridX;
     private int gridY;
-    private int startX;
+    private int startX; // starting position
     private int startY;
-    private Direction currentDirection;
+    private Direction currentDirection; // current movement direction
     private Color ghostColor;
-    private Maze maze;
-    private Pacman pacman;
-    private Random random;
+    // References
+    private Maze maze; // maze for wall detection
+    private Pacman pacman; // pacman for chasing/fleeing
+    private Random random; // for random direction choices
     
-    private boolean vulnerable = false;
-    private int moveCounter = 0;
+    // for state
+    private boolean vulnerable = false; // after pacman eats power pellet
+    private int moveCounter = 0; // counter to control movement speed
     
     public Ghost(int startX, int startY, Color color, Maze maze, Pacman pacman) {
         this.startX = startX;
@@ -52,8 +54,8 @@ public class Ghost {
         body.setFill(ghostColor);
         body.setStroke(Color.DARKGRAY);
         body.setStrokeWidth(1);
-        body.setX(-9);
-        body.setY(-9);
+        body.setX(-9); // center the body
+        body.setY(-9); // center the body
         
         // Bottom wavy part
         Polygon bottom = new Polygon();
@@ -155,7 +157,7 @@ public class Ghost {
      * Gets all valid directions
      */
     private List<Direction> getValidDirections() {
-        List<Direction> valid = new ArrayList<>();
+        List<Direction> valid = new ArrayList<>(); // List is interface, ArrayList is implementation
         
         for (Direction dir : Direction.values()) {
             int newX = gridX + dir.getDeltaX();

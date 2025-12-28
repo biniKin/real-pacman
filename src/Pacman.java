@@ -1,21 +1,21 @@
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
-import javafx.scene.shape.ArcType;
+import javafx.scene.shape.Arc; // for Pacman shape
+import javafx.scene.shape.ArcType; // to define arc type. enum with values like OPEN, CHORD, ROUND
 
 /**
  * Pacman character with smooth grid-based movement
  */
 public class Pacman {
     
-    private Arc sprite;
-    private int gridX;
+    private Arc sprite; // Pacman visual representation
+    private int gridX; // grid position. stores pacman's position in maze grid
     private int gridY;
-    private Direction currentDirection;
-    private Direction nextDirection;
+    private Direction currentDirection; // current movement direction
+    private Direction nextDirection; // next direction to turn to
     
     // Animation
-    private int animationCounter = 0;
-    private boolean mouthOpen = true;
+    private int animationCounter = 0; // counter for mouth animation
+    private boolean mouthOpen = true; // mouth state
     
     public Pacman(int startX, int startY) {
         this.gridX = startX;
@@ -94,7 +94,7 @@ public class Pacman {
         double pixelX = gridX * Maze.TILE_SIZE + Maze.TILE_SIZE / 2;
         double pixelY = gridY * Maze.TILE_SIZE + Maze.TILE_SIZE / 2;
         
-        sprite.setCenterX(pixelX);
+        sprite.setCenterX(pixelX); // physical position in pixels
         sprite.setCenterY(pixelY);
         
         updateRotation();
