@@ -120,6 +120,7 @@ public class GameController {
         Text inst2 = new Text("Eat all dots to win!");
         inst2.setFill(Color.WHITE);
         inst2.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+
         inst2.setX(240);
         inst2.setY(330);
         root.getChildren().add(inst2);
@@ -240,6 +241,7 @@ public class GameController {
         slowMotionText.setFill(Color.MAGENTA);
         slowMotionText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         root.getChildren().add(slowMotionText);
+
         
         // Ghost Freeze UI (initially hidden)
         ghostFreezeText = new Text(250, 670, "");
@@ -343,6 +345,7 @@ public class GameController {
                 
                 // Check coin magnet timeout
                 if (coinMagnetActive && now - coinMagnetStart >= COIN_MAGNET_DURATION) {
+
                     deactivateCoinMagnet();
                 }
                 
@@ -426,6 +429,7 @@ public class GameController {
                 }
                 
                 // Update animations
+
                 pacman.updateAnimation();
             }
         };
@@ -444,7 +448,6 @@ public class GameController {
             maze.removeDot(pacman.getGridX(), pacman.getGridY());
             int points = doublePointsActive ? 20 : 10;
             score += points;
-            SoundManager.playSound(SoundManager.Sound.EAT_DOT);
             updateUI();
             
             // Check level completion
@@ -459,7 +462,6 @@ public class GameController {
             int points = doublePointsActive ? 100 : 50;
             score += points;
             activatePowerMode();
-            SoundManager.playSound(SoundManager.Sound.EAT_POWER_PELLET);
             updateUI();
         }
         
@@ -469,7 +471,6 @@ public class GameController {
             int points = doublePointsActive ? 200 : 100;
             score += points;
             activateSlowMotion();
-            SoundManager.playSound(SoundManager.Sound.POWER_UP);
             updateUI();
         }
         
@@ -479,7 +480,6 @@ public class GameController {
             int points = doublePointsActive ? 300 : 150;
             score += points;
             activateGhostFreeze();
-            SoundManager.playSound(SoundManager.Sound.POWER_UP);
             updateUI();
         }
         
@@ -489,7 +489,6 @@ public class GameController {
             int points = doublePointsActive ? 400 : 200;
             score += points;
             activateCoinMagnet();
-            SoundManager.playSound(SoundManager.Sound.POWER_UP);
             updateUI();
         }
         
@@ -499,7 +498,6 @@ public class GameController {
             int points = doublePointsActive ? 250 : 125;
             score += points;
             activateSpeedBoost();
-            SoundManager.playSound(SoundManager.Sound.POWER_UP);
             updateUI();
         }
         
@@ -509,7 +507,6 @@ public class GameController {
             int points = doublePointsActive ? 350 : 175;
             score += points;
             activateInvincibility();
-            SoundManager.playSound(SoundManager.Sound.POWER_UP);
             updateUI();
         }
         
@@ -518,7 +515,6 @@ public class GameController {
             maze.removeDoublePointsPowerUp(pacman.getGridX(), pacman.getGridY());
             score += 300; // This one doesn't double itself
             activateDoublePoints();
-            SoundManager.playSound(SoundManager.Sound.POWER_UP);
             updateUI();
         }
         
@@ -539,13 +535,13 @@ public class GameController {
                     int points = doublePointsActive ? 400 : 200;
                     score += points;
                     ghost.respawn();
-                    SoundManager.playSound(SoundManager.Sound.EAT_GHOST);
                     updateUI();
                 } else if (!ghost.isVulnerable() && !invincibilityActive) {
                     // Ghost catches Pacman (unless invincible)
                     pacmanCaught();
                 }
             }
+
         }
     }
     
@@ -685,7 +681,6 @@ public class GameController {
      */
     private void pacmanCaught() {
         lives--;
-        SoundManager.playSound(SoundManager.Sound.DEATH);
         
         if (lives <= 0) {
             gameOver();
@@ -699,6 +694,7 @@ public class GameController {
                 for (Ghost ghost : ghosts) {
                     ghost.respawn();
                 }
+
                 powerMode = false;
                 slowMotionActive = false; // Reset slow motion on death
                 slowMotionText.setText("");
@@ -732,7 +728,6 @@ public class GameController {
         gameLoop.stop();
         
         score += 1000;
-        SoundManager.playSound(SoundManager.Sound.LEVEL_COMPLETE);
         updateUI();
         
         // Show level complete message

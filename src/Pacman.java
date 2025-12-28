@@ -157,6 +157,7 @@ public class Pacman {
     }
     
     // Getters
+
     public Arc getSprite() {
         return sprite;
     }
