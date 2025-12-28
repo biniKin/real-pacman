@@ -26,7 +26,7 @@ if %errorlevel% == 0 (
     echo ========================================
     echo Please check:
     echo 1. JavaFX SDK is installed
-    echo 2. Path in this script is correct: D:\javafx-sdk-17.0.17\lib
+    echo 2. Path in this script is correct: C:\javafx-sdk\lib
     echo 3. Java version is 11 or higher
     echo 4. All source files are in src\ folder
     echo.

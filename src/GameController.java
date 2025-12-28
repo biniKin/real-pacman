@@ -58,6 +58,25 @@ public class GameController {
     private static final long COIN_MAGNET_DURATION = 7_000_000_000L; // 7 seconds
     private static final double COIN_MAGNET_RADIUS = 5.0; // 5 tiles radius
     private Text coinMagnetText;
+    private javafx.scene.shape.Circle magnetRadiusCircle;
+    
+    // Speed Boost Ability
+    private boolean speedBoostActive = false;
+    private long speedBoostStart = 0;
+    private static final long SPEED_BOOST_DURATION = 6_000_000_000L; // 6 seconds
+    private Text speedBoostText;
+    
+    // Invincibility Ability
+    private boolean invincibilityActive = false;
+    private long invincibilityStart = 0;
+    private static final long INVINCIBILITY_DURATION = 5_000_000_000L; // 5 seconds
+    private Text invincibilityText;
+    
+    // Double Points Ability
+    private boolean doublePointsActive = false;
+    private long doublePointsStart = 0;
+    private static final long DOUBLE_POINTS_DURATION = 10_000_000_000L; // 10 seconds
+    private Text doublePointsText;
     
     // Timing
     private long lastPacmanUpdate = 0;
@@ -143,6 +162,13 @@ public class GameController {
         slowMotionActive = false; // Reset slow motion on new level
         ghostFreezeActive = false; // Reset ghost freeze on new level
         coinMagnetActive = false; // Reset coin magnet on new level
+        if (magnetRadiusCircle != null) {
+            root.getChildren().remove(magnetRadiusCircle);
+            magnetRadiusCircle = null;
+        }
+        speedBoostActive = false; // Reset speed boost on new level
+        invincibilityActive = false; // Reset invincibility on new level
+        doublePointsActive = false; // Reset double points on new level
         
         // Calculate ghost speed based on level
         ghostMoveInterval = Math.max(100_000_000L, 200_000_000L - (level - 1) * 20_000_000L);
@@ -226,6 +252,24 @@ public class GameController {
         coinMagnetText.setFill(Color.GOLD);
         coinMagnetText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         root.getChildren().add(coinMagnetText);
+        
+        // Speed Boost UI (initially hidden)
+        speedBoostText = new Text(250, 610, "");
+        speedBoostText.setFill(Color.LIME);
+        speedBoostText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        root.getChildren().add(speedBoostText);
+        
+        // Invincibility UI (initially hidden)
+        invincibilityText = new Text(250, 580, "");
+        invincibilityText.setFill(Color.LIGHTBLUE);
+        invincibilityText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        root.getChildren().add(invincibilityText);
+        
+        // Double Points UI (initially hidden)
+        doublePointsText = new Text(250, 550, "");
+        doublePointsText.setFill(Color.YELLOW);
+        doublePointsText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        root.getChildren().add(doublePointsText);
     }
     
     /**
@@ -263,8 +307,9 @@ public class GameController {
             public void handle(long now) {
                 if (!gameRunning) return;
                 
-                // Update Pacman
-                if (now - lastPacmanUpdate >= PACMAN_MOVE_INTERVAL) {
+                // Update Pacman (with speed boost adjustment)
+                long currentPacmanInterval = speedBoostActive ? PACMAN_MOVE_INTERVAL / 2 : PACMAN_MOVE_INTERVAL;
+                if (now - lastPacmanUpdate >= currentPacmanInterval) {
                     updatePacman();
                     lastPacmanUpdate = now;
                 }
@@ -301,6 +346,21 @@ public class GameController {
                     deactivateCoinMagnet();
                 }
                 
+                // Check speed boost timeout
+                if (speedBoostActive && now - speedBoostStart >= SPEED_BOOST_DURATION) {
+                    deactivateSpeedBoost();
+                }
+                
+                // Check invincibility timeout
+                if (invincibilityActive && now - invincibilityStart >= INVINCIBILITY_DURATION) {
+                    deactivateInvincibility();
+                }
+                
+                // Check double points timeout
+                if (doublePointsActive && now - doublePointsStart >= DOUBLE_POINTS_DURATION) {
+                    deactivateDoublePoints();
+                }
+                
                 // Update slow motion UI
                 if (slowMotionActive) {
                     long remaining = (SLOW_MOTION_DURATION - (now - slowMotionStart)) / 1_000_000_000L;
@@ -317,11 +377,52 @@ public class GameController {
                 if (coinMagnetActive) {
                     long remaining = (COIN_MAGNET_DURATION - (now - coinMagnetStart)) / 1_000_000_000L;
                     coinMagnetText.setText("COIN MAGNET: " + (remaining + 1) + "s");
+                    
+                    // Update magnet radius circle position
+                    if (magnetRadiusCircle != null) {
+                        magnetRadiusCircle.setCenterX(pacman.getGridX() * Maze.TILE_SIZE + Maze.TILE_SIZE / 2);
+                        magnetRadiusCircle.setCenterY(pacman.getGridY() * Maze.TILE_SIZE + Maze.TILE_SIZE / 2);
+                        // Pulse effect
+                        double pulse = 0.5 + 0.3 * Math.sin(now / 200_000_000.0);
+                        magnetRadiusCircle.setOpacity(pulse);
+                    }
+                }
+                
+                // Update speed boost UI
+                if (speedBoostActive) {
+                    long remaining = (SPEED_BOOST_DURATION - (now - speedBoostStart)) / 1_000_000_000L;
+                    speedBoostText.setText("SPEED BOOST: " + (remaining + 1) + "s");
+                }
+                
+                // Update invincibility UI
+                if (invincibilityActive) {
+                    long remaining = (INVINCIBILITY_DURATION - (now - invincibilityStart)) / 1_000_000_000L;
+                    invincibilityText.setText("INVINCIBLE: " + (remaining + 1) + "s");
+                    // Flash effect
+                    pacman.getSprite().setOpacity((now / 200_000_000L) % 2 == 0 ? 1.0 : 0.7);
+                } else {
+                    pacman.getSprite().setOpacity(1.0);
+                }
+                
+                // Update double points UI
+                if (doublePointsActive) {
+                    long remaining = (DOUBLE_POINTS_DURATION - (now - doublePointsStart)) / 1_000_000_000L;
+                    doublePointsText.setText("2X POINTS: " + (remaining + 1) + "s");
                 }
                 
                 // Apply coin magnet effect
                 if (coinMagnetActive) {
-                    maze.attractDotsToPosition(pacman.getGridX(), pacman.getGridY(), COIN_MAGNET_RADIUS);
+                    int dotsCollected = maze.attractDotsToPosition(pacman.getGridX(), pacman.getGridY(), COIN_MAGNET_RADIUS);
+                    if (dotsCollected > 0) {
+                        int points = doublePointsActive ? 20 : 10;
+                        score += dotsCollected * points;
+                        updateUI();
+                        
+                        // Check level completion
+                        if (maze.allDotsCollected()) {
+                            levelComplete();
+                        }
+                    }
                 }
                 
                 // Update animations
@@ -341,7 +442,8 @@ public class GameController {
         // Check dot collection
         if (maze.hasDot(pacman.getGridX(), pacman.getGridY())) {
             maze.removeDot(pacman.getGridX(), pacman.getGridY());
-            score += 10;
+            int points = doublePointsActive ? 20 : 10;
+            score += points;
             updateUI();
             
             // Check level completion
@@ -353,7 +455,8 @@ public class GameController {
         // Check power pellet collection
         if (maze.hasPowerPellet(pacman.getGridX(), pacman.getGridY())) {
             maze.removePowerPellet(pacman.getGridX(), pacman.getGridY());
-            score += 50;
+            int points = doublePointsActive ? 100 : 50;
+            score += points;
             activatePowerMode();
             updateUI();
         }
@@ -361,7 +464,8 @@ public class GameController {
         // Check slow motion power-up collection
         if (maze.hasSlowMotionPowerUp(pacman.getGridX(), pacman.getGridY())) {
             maze.removeSlowMotionPowerUp(pacman.getGridX(), pacman.getGridY());
-            score += 100;
+            int points = doublePointsActive ? 200 : 100;
+            score += points;
             activateSlowMotion();
             updateUI();
         }
@@ -369,7 +473,8 @@ public class GameController {
         // Check ghost freeze power-up collection
         if (maze.hasGhostFreezePowerUp(pacman.getGridX(), pacman.getGridY())) {
             maze.removeGhostFreezePowerUp(pacman.getGridX(), pacman.getGridY());
-            score += 150;
+            int points = doublePointsActive ? 300 : 150;
+            score += points;
             activateGhostFreeze();
             updateUI();
         }
@@ -377,8 +482,35 @@ public class GameController {
         // Check coin magnet power-up collection
         if (maze.hasCoinMagnetPowerUp(pacman.getGridX(), pacman.getGridY())) {
             maze.removeCoinMagnetPowerUp(pacman.getGridX(), pacman.getGridY());
-            score += 200;
+            int points = doublePointsActive ? 400 : 200;
+            score += points;
             activateCoinMagnet();
+            updateUI();
+        }
+        
+        // Check speed boost power-up collection
+        if (maze.hasSpeedBoostPowerUp(pacman.getGridX(), pacman.getGridY())) {
+            maze.removeSpeedBoostPowerUp(pacman.getGridX(), pacman.getGridY());
+            int points = doublePointsActive ? 250 : 125;
+            score += points;
+            activateSpeedBoost();
+            updateUI();
+        }
+        
+        // Check invincibility power-up collection
+        if (maze.hasInvincibilityPowerUp(pacman.getGridX(), pacman.getGridY())) {
+            maze.removeInvincibilityPowerUp(pacman.getGridX(), pacman.getGridY());
+            int points = doublePointsActive ? 350 : 175;
+            score += points;
+            activateInvincibility();
+            updateUI();
+        }
+        
+        // Check double points power-up collection
+        if (maze.hasDoublePointsPowerUp(pacman.getGridX(), pacman.getGridY())) {
+            maze.removeDoublePointsPowerUp(pacman.getGridX(), pacman.getGridY());
+            score += 300; // This one doesn't double itself
+            activateDoublePoints();
             updateUI();
         }
         
@@ -396,11 +528,12 @@ public class GameController {
             if (ghost.getGridX() == pacman.getGridX() && ghost.getGridY() == pacman.getGridY()) {
                 if (powerMode && ghost.isVulnerable()) {
                     // Pacman eats ghost
-                    score += 200;
+                    int points = doublePointsActive ? 400 : 200;
+                    score += points;
                     ghost.respawn();
                     updateUI();
-                } else if (!ghost.isVulnerable()) {
-                    // Ghost catches Pacman
+                } else if (!ghost.isVulnerable() && !invincibilityActive) {
+                    // Ghost catches Pacman (unless invincible)
                     pacmanCaught();
                 }
             }
@@ -460,6 +593,16 @@ public class GameController {
         coinMagnetActive = true;
         coinMagnetStart = System.nanoTime();
         coinMagnetText.setText("COIN MAGNET: 7s");
+        
+        // Create visual radius indicator
+        magnetRadiusCircle = new javafx.scene.shape.Circle();
+        magnetRadiusCircle.setRadius(COIN_MAGNET_RADIUS * Maze.TILE_SIZE);
+        magnetRadiusCircle.setFill(Color.TRANSPARENT);
+        magnetRadiusCircle.setStroke(Color.GOLD);
+        magnetRadiusCircle.setStrokeWidth(3);
+        magnetRadiusCircle.getStrokeDashArray().addAll(10.0, 10.0);
+        magnetRadiusCircle.setOpacity(0.6);
+        root.getChildren().add(magnetRadiusCircle);
     }
     
     /**
@@ -468,6 +611,64 @@ public class GameController {
     private void deactivateCoinMagnet() {
         coinMagnetActive = false;
         coinMagnetText.setText("");
+        
+        // Remove visual radius indicator
+        if (magnetRadiusCircle != null) {
+            root.getChildren().remove(magnetRadiusCircle);
+            magnetRadiusCircle = null;
+        }
+    }
+    
+    /**
+     * Activates speed boost ability
+     */
+    private void activateSpeedBoost() {
+        speedBoostActive = true;
+        speedBoostStart = System.nanoTime();
+        speedBoostText.setText("SPEED BOOST: 6s");
+    }
+    
+    /**
+     * Deactivates speed boost ability
+     */
+    private void deactivateSpeedBoost() {
+        speedBoostActive = false;
+        speedBoostText.setText("");
+    }
+    
+    /**
+     * Activates invincibility ability
+     */
+    private void activateInvincibility() {
+        invincibilityActive = true;
+        invincibilityStart = System.nanoTime();
+        invincibilityText.setText("INVINCIBLE: 5s");
+    }
+    
+    /**
+     * Deactivates invincibility ability
+     */
+    private void deactivateInvincibility() {
+        invincibilityActive = false;
+        invincibilityText.setText("");
+        pacman.getSprite().setOpacity(1.0);
+    }
+    
+    /**
+     * Activates double points ability
+     */
+    private void activateDoublePoints() {
+        doublePointsActive = true;
+        doublePointsStart = System.nanoTime();
+        doublePointsText.setText("2X POINTS: 10s");
+    }
+    
+    /**
+     * Deactivates double points ability
+     */
+    private void deactivateDoublePoints() {
+        doublePointsActive = false;
+        doublePointsText.setText("");
     }
     
     /**
@@ -495,6 +696,17 @@ public class GameController {
                 ghostFreezeText.setText("");
                 coinMagnetActive = false; // Reset coin magnet on death
                 coinMagnetText.setText("");
+                if (magnetRadiusCircle != null) {
+                    root.getChildren().remove(magnetRadiusCircle);
+                    magnetRadiusCircle = null;
+                }
+                speedBoostActive = false; // Reset speed boost on death
+                speedBoostText.setText("");
+                invincibilityActive = false; // Reset invincibility on death
+                invincibilityText.setText("");
+                doublePointsActive = false; // Reset double points on death
+                doublePointsText.setText("");
+                pacman.getSprite().setOpacity(1.0);
                 updateUI();
                 gameRunning = true;
             });
