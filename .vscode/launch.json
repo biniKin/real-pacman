@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "PacmanGame",
+            "request": "launch",
+            "mainClass": "PacmanGame",
+            "projectName": "real-pacman_27e4401a"
+        },
+        {
+            "type": "java",
+            "name": "Run PacmanGame",
+            "request": "launch",
+            "mainClass": "PacmanGame",
+            "projectName": "real-pacman",
+            "vmArgs": "--module-path \"C:/Users/Binyam/Downloads/javafx-sdk-21.0.9/lib\" --add-modules javafx.controls,javafx.fxml",
+            "encoding": "UTF-8"
+        }
+}
