@@ -37,7 +37,7 @@ public class GameController {
     private int level = 1;
     private boolean gameRunning = false;
     private boolean powerMode = false;
-    private long powerModeStart = 0;
+    private long powerModeStart = 0; // timestamp when power mode started
     private static final long POWER_MODE_DURATION = 8_000_000_000L;
     
     // Slow Motion Ability
@@ -207,7 +207,7 @@ public class GameController {
         Color[] colors = {Color.RED, Color.PINK, Color.CYAN, Color.ORANGE};
         int[][] starts = {{13, 11}, {14, 11}, {13, 12}, {14, 12}};
         
-        int numGhosts = Math.min(3 + (level - 1), 4);
+        int numGhosts = Math.min(3 + (level - 1), 6);
         
         for (int i = 0; i < numGhosts; i++) {
             Ghost ghost = new Ghost(starts[i][0], starts[i][1], colors[i], maze, pacman);
